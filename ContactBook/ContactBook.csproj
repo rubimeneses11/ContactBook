@@ -20,9 +20,11 @@
     <None Remove="Swashbuckle.AspNetCore" />
     <None Remove="Services\" />
     <None Remove="Services\Interfaces\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="bin\Debug\net6.0\appsettings.json" />
+    <None Remove="Models\ViewModels\" />
+    <None Remove="MailKit" />
+    <None Remove="MimeKit" />
+    <None Remove="Helpers\" />
+    <None Remove="MySqlConnector" />
   </ItemGroup>
   <ItemGroup>
     <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
@@ -35,7 +37,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.9" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
-    <PackageReference Include="MySql.Data" Version="8.0.30" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
@@ -45,6 +46,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.9" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="MailKit" Version="3.4.1" />
+    <PackageReference Include="MimeKit" Version="3.4.1" />
+    <PackageReference Include="MySqlConnector" Version="2.1.13" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +56,8 @@
     <Folder Include="wwwroot\img\" />
     <Folder Include="Services\" />
     <Folder Include="Services\Interfaces\" />
+    <Folder Include="Models\ViewModels\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\img\" />

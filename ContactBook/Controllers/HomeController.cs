@@ -22,6 +22,25 @@ public class HomeController : Controller
     {
         return View();
     }
+    //custom route for errors
+    [Route("/Home/HandleError/{code:int}")]
+    public IActionResult HandleError (int code)
+    {
+        var customError = new CustomError();
+
+        customError.code = code;
+
+        if(code == 404)
+        {
+            customError.message = "Page not found";
+        }
+        else
+        {
+            customError.message = "Sorry, something went wrong";
+        }
+
+        return View("~/Views/Shared/CustomError.cshtml", customError);
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

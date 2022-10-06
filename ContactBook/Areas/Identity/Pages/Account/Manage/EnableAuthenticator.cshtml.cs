@@ -181,7 +181,7 @@ namespace ContactBook.Areas.Identity.Pages.Account.Manage
             return string.Format(
                 CultureInfo.InvariantCulture,
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("Microsoft.AspNetCore.Identity.UI"),
+                _urlEncoder.Encode("ContactBook"),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }
