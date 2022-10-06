@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ContactBook.Data;
 using Microsoft.EntityFrameworkCore.Design;
-using MySql.EntityFrameworkCore.Extensions;
 using ContactBook.Models;
 using ContactBook.Services;
 using ContactBook.Services.Interfaces;
@@ -15,11 +14,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 //connection string to our database
 //var connectionString = builder.Configuration.GetConnectionString("Default");
+//var connectionString = builder.Configuration.GetSection("pgSettings")["pgConnection"];
 var connectionString = ConnectionHelper.GetConnectionString(builder.Configuration);
 
-//configured to use mySql driver 
+//configured to use postgres driver 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySQL(connectionString));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddRazorPages();
 
@@ -37,10 +37,11 @@ builder.Services.AddScoped<IEmailSender, EmailService>();
 //configure email service 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
+//builds the app
 var app = builder.Build();
+//grabs our services
 var scope = app.Services.CreateScope();
-
-//calls the method so we can keep our db updated
+//gets db update with the latest migrations
 await DataHelper.ManageDataAsync(scope.ServiceProvider);
 
 // Configure the HTTP request pipeline.

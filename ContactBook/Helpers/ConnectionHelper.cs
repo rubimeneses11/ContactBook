@@ -1,32 +1,33 @@
 ﻿using System;
-using MySql;
-using MySql.Data.MySqlClient;
+using Npgsql;
 
 namespace ContactBook.Helpers
 {
     public static class ConnectionHelper
     {
+        //connection string for either local OR hosted environment
         public static string GetConnectionString(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("Default");
+            var connectionString = configuration.GetSection("pgSettings")["pgConnection"];
             var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-            //looks to see if app is running locally or being hosted so our connection string works
-            return String.IsNullOrEmpty(databaseUrl) ? connectionString: BuildConnectionString(databaseUrl);
+            return String.IsNullOrEmpty(databaseUrl) ? connectionString : BuildConnectionString(databaseUrl);
         }
 
-        //build a connection string from the environment (ie. Heroku)
+        //build a connection string from the environment (heroku)
         private static string BuildConnectionString(string databaseUrl)
         {
             var databaseUri = new Uri(databaseUrl);
             var userInfo = databaseUri.UserInfo.Split(':');
-            var builder = new MySqlConnectionStringBuilder
+            var builder = new NpgsqlConnectionStringBuilder
             {
-                Server = "mysql",
-                Database = "contactbook",
-                UserID = userInfo[0],
+                Host = databaseUri.Host,
+                Port = databaseUri.Port,
+                Username = userInfo[0],
                 Password = userInfo[1],
-                SslMode = MySqlSslMode.Required,
+                Database = databaseUri.LocalPath.TrimStart('/'),
+                SslMode = SslMode.Require,
+                TrustServerCertificate = true
             };
 
             return builder.ToString();

@@ -42,29 +42,8 @@ namespace ContactBook.Controllers
         {
             ViewData["SwalMessage"] = swalMessage;
 
-            //original code
             var applicationDbContext = _context.Contacts.Include(c => c.AppUser);
             return View(await applicationDbContext.ToListAsync());
-
-            //category filter functionality!!NOT WORKING!!
-            //var contacts = new List<Contact>(); //empty list we are creating
-            //string appUserId = _userManager.GetUserId(User); //getting the current user that's logged in
-
-            ////return userid and its associated contacts & categories
-            //AppUser appUser = _context.Users
-            //                          .Include(c => c.Contacts)
-            //                          .ThenInclude(c => c.Categories)
-            //                          .FirstOrDefault(u => u.Id == appUserId);
-
-            //var categories = appUser.Categories;
-
-            //contacts = appUser.Contacts.OrderBy(x => x.LastName)
-            //                           .ThenBy(x => x.FirstName)
-            //                           .ToList();
-
-            //ViewData["CategoryId"] = new SelectList(categories, "Id", "Name");
-
-            //return View(contacts);
         }
 
         [Authorize]
@@ -231,6 +210,13 @@ namespace ContactBook.Controllers
             {
                 try
                 {
+                    contact.Created = DateTime.SpecifyKind(contact.Created, DateTimeKind.Utc);
+
+                    if(contact.BirthDate != null)
+                    {
+                        contact.BirthDate = DateTime.SpecifyKind(contact.BirthDate.Value, DateTimeKind.Utc);
+                    }
+
                     if (contact.ImageFile != null)
                     {
                         contact.ImageData = await _imageService.ConvertFileToByteArrayAsync(contact.ImageFile);

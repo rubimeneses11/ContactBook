@@ -19,7 +19,9 @@ namespace ContactBook.Services
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
+            //using null coalescing operator
             //gets local value, but if it is null it will get the environment variable
+            //allows email service to work whether run locally or hosted
             var emailSender = _mailSettings.Email ?? Environment.GetEnvironmentVariable("Email");
 
             MimeMessage newEmail = new();
@@ -43,8 +45,13 @@ namespace ContactBook.Services
 
             try
             {
+                //null coalescing - configured for local or hosted environment
                 var host = _mailSettings.Host ?? Environment.GetEnvironmentVariable("Host");
+
+                //using ternary operator
                 var port = _mailSettings.Port != 0 ? _mailSettings.Port : int.Parse(Environment.GetEnvironmentVariable("Port")!);
+
+                //null coalescing - configured for local or hosted environment
                 var password = _mailSettings.Password ?? Environment.GetEnvironmentVariable("Password");
 
                 await smtpClient.ConnectAsync(host, port, SecureSocketOptions.StartTls);

@@ -14,7 +14,7 @@ namespace ContactBook.Models
         [Display(Name = "Category Name")]
         public string? Name { get; set; }
 
-        //Virtuals
+        //Virtuals --allows us to access foreign keys
         public virtual AppUser? AppUser {get; set;}
         public virtual ICollection<Contact> Contacts { get; set; } = new HashSet<Contact>();
     }
