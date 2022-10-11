@@ -38,19 +38,84 @@ namespace ContactBook.Controllers
 
         // GET: Contacts
         [Authorize]
-        public async Task<IActionResult> Index(string swalMessage = null)
+        public IActionResult Index(int categoryId, string swalMessage = null)
         {
             ViewData["SwalMessage"] = swalMessage;
 
-            var applicationDbContext = _context.Contacts.Include(c => c.AppUser);
-            return View(await applicationDbContext.ToListAsync());
+            //var applicationDbContext = _context.Contacts.Include(c => c.AppUser);
+
+            List<Contact> contacts = new List<Contact>();
+
+            string appUserId = _userManager.GetUserId(User);
+
+            AppUser? appUser = _context.Users.Include(c => c.Contacts)
+                                            .ThenInclude(c => c.Categories)
+                                            .FirstOrDefault(u => u.Id == appUserId);
+            //category filter functionality
+            var categories = appUser.Categories;
+
+            if(categoryId == 0)
+            {
+            contacts = appUser.Contacts.OrderBy(c => c.LastName)
+                                       .ThenBy(c => c.FirstName)
+                                       .ToList();
+            }
+            else
+            {
+                contacts = appUser.Categories.FirstOrDefault(c => c.Id == categoryId)
+                                  .Contacts
+                                  .OrderBy(c => c.LastName)
+                                  .ThenBy(c => c.FirstName)
+                                  .ToList();
+            }
+
+
+            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name");
+
+            return View(contacts);
+        }
+
+        [Authorize]
+        public IActionResult SearchContacts (string searchString)
+        {
+            //get a list of contacts based on this user
+            //filter by the search string
+            string appUserId = _userManager.GetUserId(User); //logged in user
+
+            var contacts = new List<Contact>();
+
+            AppUser? appUser = _context.Users
+                                      .Include(c => c.Contacts)
+                                      .ThenInclude(c => c.Categories)
+                                      .FirstOrDefault(u => u.Id == appUserId);
+
+            //if search box is empty, return all contacts
+            if(string.IsNullOrEmpty(searchString))
+            {
+                contacts = appUser.Contacts
+                                  .OrderBy(c => c.LastName)
+                                  .ThenBy(c => c.FirstName)
+                                  .ToList();
+            }
+            else
+            //get the contacts for the app user
+            {
+                contacts = appUser.Contacts.Where(c => c.FullName!.ToLower().Contains(searchString.ToLower()))
+                                 .OrderBy(c => c.LastName)
+                                 .ThenBy(c => c.FirstName)
+                                 .ToList();
+            }
+
+            ViewData["CategoryId"] = new SelectList(appUser.Categories, "Id", "Name", 0);
+
+            return View(nameof(Index), contacts);
         }
 
         [Authorize]
         public async Task<IActionResult> EmailContact(int id)
         {
             string appUserId = _userManager.GetUserId(User);
-            Contact contact = await _context.Contacts.Where(c => c.Id == id && c.AppUserID == appUserId)
+            Contact? contact = await _context.Contacts.Where(c => c.Id == id && c.AppUserID == appUserId)
                                                      .FirstOrDefaultAsync();
             if (contact == null)
             {
